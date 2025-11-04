@@ -3,36 +3,55 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
+import * as dotenv from 'dotenv';
+// import * as nodemailer from 'nodemailer';
 
+dotenv.config();
 @Injectable()
 export class MailService {
-  private transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465, // Use 465 for SSL (secure: true)
-    secure: true, // Must be false for TLS (port 587)
-    auth: {
-      user: 'ekemeziebartholomew@gmail.com', // Your Gmail address
-      pass: 'lfia dwyw izkz bvlo', // Use the 16-character App Password
-    },
-  });
+  // private transporter = nodemailer.createTransport({
+  //   host: 'smtp.gmail.com',
+  //   port: 465, // Use 465 for SSL (secure: true)
+  //   secure: true, // Must be false for TLS (port 587)
+  //   auth: {
+  //     user: 'ekemeziebartholomew@gmail.com', // Your Gmail address
+  //     pass: 'lfia dwyw izkz bvlo', // Use the 16-character App Password
+  //   },
+  // });
+
+  private resend = new Resend(process.env.RESEND_API_KEY);
 
   async sendMail({ to, subject, html }) {
-    const mailOptions = {
-      from: '"TGN" <ekemeziebartholomew@gmail.com>',
-      to,
-      subject,
-      html,
-    };
-
     try {
-      const info = await this.transporter.sendMail(mailOptions);
-      console.log('Email sent:', info.messageId);
-      return info;
+      const response = await this.resend.emails.send({
+        from: 'Budget Tracker <onboarding@resend.dev>',
+        to,
+        subject,
+        html,
+      });
+
+      console.log(response);
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.log(error);
       throw error;
     }
+
+    // const mailOptions = {
+    //   from: '"TGN" <ekemeziebartholomew@gmail.com>',
+    //   to,
+    //   subject,
+    //   html,
+    // };
+
+    // try {
+    //   const info = await this.transporter.sendMail(mailOptions);
+    //   console.log('Email sent:', info.messageId);
+    //   return info;
+    // } catch (error) {
+    //   console.error('Error sending email:', error);
+    //   throw error;
+    // }
   }
 
   async sendVerificationEmail({ name, email, verificationToken, origin }) {
@@ -65,7 +84,7 @@ export class MailService {
       This verification link will expire in 24 hours for security reasons.
       If you did not create an account with us, please ignore this email.
     </p>
-    <p>Best regards,<br/>The Support Team</p>
+    <p>Best regards</p>
   `;
 
     return this.sendMail({
@@ -105,8 +124,7 @@ export class MailService {
     </p>
     <hr />
     <p style="font-size: 13px; color: #6b7280;">
-      Thank you,<br />
-      The Support Team
+      Thank you
     </p>
   `;
 
