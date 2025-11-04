@@ -12,6 +12,15 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api/v1');
 
+  // ✅ Allow requests from your Netlify domain
+  app.enableCors({
+    origin: [
+      'https://tgn-budget-tracker.netlify.app', // your frontend
+      'http://localhost:3000', // for local testing
+    ],
+    credentials: true, // if you’re using cookies or sessions
+  });
+
   const port = process.env.PORT || 4000;
   await app.listen(port);
 }
