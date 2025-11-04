@@ -58,14 +58,14 @@ export class AuthService {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: oneDay,
-      sameSite: 'strict',
+      sameSite: 'none',
     });
 
     res.cookie('refreshToken', refreshTokenJwt, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: twoDays,
-      sameSite: 'strict',
+      sameSite: 'none',
     });
   }
 
@@ -186,14 +186,14 @@ export class AuthService {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       expires: new Date(0),
-      sameSite: 'strict',
+      sameSite: 'none',
     });
 
     res.cookie('refreshToken', 'logout', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       expires: new Date(0),
-      sameSite: 'strict',
+      sameSite: 'none',
     });
   }
 
