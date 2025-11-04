@@ -55,7 +55,9 @@ export class MailService {
   }
 
   async sendVerificationEmail({ name, email, verificationToken, origin }) {
-    const link = `${origin}/verify-email?token=${verificationToken}&email=${email}`;
+    const cleanOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+
+    const link = `${cleanOrigin}/verify-email?token=${verificationToken}&email=${email}`;
 
     const message = `
     <p>Thank you for signing up, ${name}!</p>
@@ -95,7 +97,10 @@ export class MailService {
   }
 
   sendResetPasswordEmail({ name, email, token, origin }) {
-    const resetLink = `${origin}/reset-password?token=${token}&email=${email}`;
+    const cleanOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+
+    const resetLink = `${cleanOrigin}/reset-password?token=${token}&email=${email}`;
+    // const resetLink = `${origin}/reset-password?token=${token}&email=${email}`;
 
     const message = `
     <p>We received a request to reset the password for your account associated with this email address.</p>
