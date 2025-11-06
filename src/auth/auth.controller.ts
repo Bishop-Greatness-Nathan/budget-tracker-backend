@@ -56,8 +56,9 @@ export class AuthController {
   }
 
   @Post('verify-email')
-  async verifyEmail(@Body(ValidationPipe) data: VerifyEmailDto) {
-    return await this.authService.verifyEmail(data);
+  verifyEmail(@Body(ValidationPipe) data: VerifyEmailDto) {
+    console.log(data.verificationToken);
+    return this.authService.verifyEmail(data);
   }
 
   @UseGuards(AuthGuard)
