@@ -3,61 +3,27 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Injectable } from '@nestjs/common';
-import { Resend } from 'resend';
 import * as dotenv from 'dotenv';
-// import * as nodemailer from 'nodemailer';
+import axios from 'axios';
 
 dotenv.config();
 @Injectable()
 export class MailService {
-  // private transporter = nodemailer.createTransport({
-  //   host: 'smtp.gmail.com',
-  //   port: 465, // Use 465 for SSL (secure: true)
-  //   secure: true, // Must be false for TLS (port 587)
-  //   auth: {
-  //     user: 'ekemeziebartholomew@gmail.com', // Your Gmail address
-  //     pass: 'lfia dwyw izkz bvlo', // Use the 16-character App Password
-  //   },
-  // });
-
-  private resend = new Resend(process.env.RESEND_API_KEY);
-
   async sendMail({ to, subject, html }) {
     try {
-      const response = await this.resend.emails.send({
-        from: 'Budget Tracker <onboarding@resend.dev>',
-        to,
-        subject,
-        html,
-      });
-
-      console.log(response);
+      await axios.post(
+        `${process.env.RELAY_URL}/mail/send`,
+        { to, subject, html },
+        { headers: { 'x-api-key': process.env.RELAY_SECRET } },
+      );
     } catch (error) {
       console.log(error);
       throw error;
     }
-
-    // const mailOptions = {
-    //   from: '"TGN" <ekemeziebartholomew@gmail.com>',
-    //   to,
-    //   subject,
-    //   html,
-    // };
-
-    // try {
-    //   const info = await this.transporter.sendMail(mailOptions);
-    //   console.log('Email sent:', info.messageId);
-    //   return info;
-    // } catch (error) {
-    //   console.error('Error sending email:', error);
-    //   throw error;
-    // }
   }
 
   async sendVerificationEmail({ name, email, verificationToken, origin }) {
-    const cleanOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
-
-    const link = `${cleanOrigin}/verify-email?token=${verificationToken}&email=${email}`;
+    const link = `${origin}/verify-email?token=${verificationToken}&email=${email}`;
 
     const message = `
     <p>Thank you for signing up, ${name}!</p>
@@ -97,10 +63,7 @@ export class MailService {
   }
 
   sendResetPasswordEmail({ name, email, token, origin }) {
-    const cleanOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
-
-    const resetLink = `${cleanOrigin}/reset-password?token=${token}&email=${email}`;
-    // const resetLink = `${origin}/reset-password?token=${token}&email=${email}`;
+    const link = `${origin}/reset-password?token=${token}&email=${email}`;
 
     const message = `
     <p>We received a request to reset the password for your account associated with this email address.</p>
@@ -108,7 +71,7 @@ export class MailService {
       If you made this request, please click the button below to reset your password:
     </p>
     <p style="text-align: center; margin: 20px 0;">
-      <a href="${resetLink}" target="_blank" rel="noopener noreferrer"
+      <a href="${link}" target="_blank" rel="noopener noreferrer"
         style="
           background-color: #4f46e5;
           color: #ffffff;
