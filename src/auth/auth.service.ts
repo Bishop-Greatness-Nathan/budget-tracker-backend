@@ -128,8 +128,7 @@ export class AuthService {
   async verifyEmail(data: VerifyEmailDto) {
     const user = await this.userModel.findOne({ email: data.email });
     if (!user) throw new UnauthorizedException('Verification failed');
-    console.log(user.verificationToken);
-    console.log(data.verificationToken);
+
     if (user.verificationToken !== data.verificationToken)
       throw new UnauthorizedException('Verification failed');
 

@@ -57,7 +57,6 @@ export class AuthController {
 
   @Post('verify-email')
   verifyEmail(@Body(ValidationPipe) data: VerifyEmailDto) {
-    console.log(data.verificationToken);
     return this.authService.verifyEmail(data);
   }
 
